@@ -20,7 +20,7 @@ Quoted from WINspect:
 
 In addition, it parses other interesting information about the system to further enchance the output with a baseline defined by your organisation. It aims to run on multiple machines and output the results. It's basically just a collector of interesting information about the Windows machine.
 
-You will benefit from this tool if you have a baseline of authorized applications, services and your configuration is strict and minimal. Whitelisting is a good too.
+You will benefit from this tool if you have a baseline of authorized applications, services and your configuration is strict and minimal. Whitelisting is good too.
 
 ## Features (28 modules)
 Module-X implies Parse-X and Display-X functions. Display-X is a plaintext version of the results of one function and steps produced during execution.
@@ -94,41 +94,47 @@ powershell .\waps\_agent.ps1 -verbosity 3 -range "192.168.0.1-192.168.0.255"
 
 To convert the Json format v2 to something more readable, run the following:
 
-> Get-Content -Raw -Path .\json-DESKTOP-1337-1337133742.json | ConvertFrom-Json | ConvertTo-Json > json-DESKTOP-1337-1337133742-readable.json
+```text
+Get-Content -Raw -Path .\json-DESKTOP-1337-1337133742.json | ConvertFrom-Json | ConvertTo-Json > json-DESKTOP-1337-1337133742-readable.json
+```
 
 To list all properties of PowerShell object, add `| Format-List *` after the command.
 
 ## How to use it remotely?
-### Option 1: Target a computer by computer name
+### Option 1: Target a computer locally
 ```text
-Invoke-Command -ComputerName $env:computername -FilePath .\waps.ps1
+powershell .\waps.ps1 -verbosity 3
 ```
 
-### Option 2: Target a computer by IP
+### Option 2: Target a computer range by IP
 ```text
-[System.Net.Dns]::GetHostbyAddress("192.168.193.20").HostName
-Invoke-Command -ComputerName $env:computername -FilePath .\waps.ps1
+powershell .\waps\_agent.ps1 -verbosity 3 -range "192.168.0.1-192.168.0.255"
 ```
 
 ## WorkFlow
-It will create four files if there are no errors: 
+It will create four files where the script is started if there are no errors:
+
 1) secedit-$timestamp.log = secedit-1337133742.log
-2) json-$env:COMPUTERNAME-$timestamp.txt = json-DESKTOP-1337-1337133742.txt
+2) logs-$env:computername:$unixEpochTime.txt = logs-DESKTOP-1337-1337133742.txt
 3) output-$env:COMPUTERNAME-$timestamp.txt = output-DESKTOP-1337-1337133742.txt
-3) logs-$env:computername:$unixEpochTime.txt = logs-DESKTOP-1337-1337133742.txt
+4) json-$env:COMPUTERNAME-$timestamp.txt = json-DESKTOP-1337-1337133742.txt
+
+If there are errors such as administrator permission needed, only 2 and 3 will be created.
 
 ## Problem running the script?
-> waps.ps1 cannot be loaded because running scripts is disabled on this system.
-Execute `Set-ExecutionPolicy Bypass` as administrator.
+Error such as waps.ps1 cannot be loaded because running scripts is disabled on this system. Execute as administrator:
+```text
+Set-ExecutionPolicy Bypass
+```
+Be sure to return to the default state once your done.
 
 ## Contributions
 Please contribute and suggest any improvements. Spelling, design modeling, exchanging ideas, etc. If you want to point an issue, please [file an issue](https://github.com/s0h3ck/waps/issues).
 
 ### TODO
-
-[ ] Improve the documentation (how to use it, options, plan of customization, etc.)
-[ ] Improve compatibility between version (more tests)
-[ ] More stuff about active directory? Yes, always.
+- [ ] Improve the documentation (how to use it, options, plan of customization, etc.)
+- [ ] Improve compatibility between version (more tests)
+- [ ] More stuff about active directory? Yes, always.
 
 ## Direct contributions
 Please make sure you respect the code style of [Powershell](https://github.com/PoshCode/PowerShellPracticeAndStyle). Please indent your code with 4 spaces. You feel ready to push a new module?
